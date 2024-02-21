@@ -200,7 +200,13 @@ export default {
             CasosService.getRelat(this.tipo, JSON.stringify(this.filter))
                 .then((res) => {
                     this.dataTable = res.data;
-                    console.log(res.data);
+                    this.$router.push({
+                        name: 'relat',
+                        query: {
+                            arrData: JSON.stringify(res.data),
+                            tipo: this.tipo
+                        },
+                    });
                 })
                 .catch((err) => {
                     console.log(err.response);

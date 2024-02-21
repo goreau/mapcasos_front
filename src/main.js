@@ -12,10 +12,11 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 /* import font awesome icon component */
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import { faTrash, faEdit, faCheck, faUser, faUsers, faHouse,  faSearch, faLocationDot, faChartSimple, faDrawPolygon} from '@fortawesome/free-solid-svg-icons'
-
+import { faFilePdf, faFileExcel, faFileCsv, faFileLines, faTrash, faEdit, faCheck, faUser, faUsers, faHouse,  faSearch, faLocationDot, faChartSimple,  
+    faCircle, faDrawPolygon, faFileImport, faBroom, faPowerOff, faTag } from '@fortawesome/free-solid-svg-icons'
 /* add icons to the library */
-library.add(faTrash, faEdit, faCheck, faUser, faUsers, faHouse, faSearch, faLocationDot, faChartSimple, faDrawPolygon);
+library.add(faFilePdf, faFileExcel, faFileCsv, faFileLines, faTrash, faEdit, faCheck, faUser, faUsers, faHouse, faSearch, faLocationDot, faChartSimple, 
+    faCircle, faDrawPolygon, faFileImport, faBroom, faPowerOff, faTag);
 
 
 createApp(App)

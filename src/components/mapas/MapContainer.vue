@@ -1,8 +1,10 @@
 <template>
     <div ref="map-root" style="height: 60rem">
         <div id="info"></div>
+        <div id="legenda" v-show="hasLegenda"><Legenda :title="lTitle"/></div>
     </div>
-    
+    <salva-pol-dialog ref="salvaPolDialog"></salva-pol-dialog>
+    <load-pol-dialog ref="loadPolDialog"></load-pol-dialog>
 </template>
   
 <script>
@@ -23,23 +25,131 @@ import {
   Stroke,
 } from 'ol/style.js';
 import {createEmpty, extend} from 'ol/extent';
+import Draw from 'ol/interaction/Draw.js';
 
-import PointR from '../../assets/icons/red-blank.png'
-import PointO from '../../assets/icons/orange-blank.png'
-import PointG from '../../assets/icons/grn-blank.png'
+import { jsPDF } from "jspdf";
 
+import PointR from '../../assets/icons/red-blank.png';
+import PointO from '../../assets/icons/orange-blank.png';
+import PointG from '../../assets/icons/grn-blank.png';
+import SalvaPolDialog from '../forms/SalvaPolDialog.vue';
+import LoadPolDialog from '../forms/LoadPolDialog.vue';
+import Legenda from '@/components/mapas/LegendaView.vue';
+
+import Control from 'ol/control/Control.js';
 
 export default {
     name: 'MapContainer',
-    components: {},
-    data(){
+    components: {
+        SalvaPolDialog,
+        LoadPolDialog,
+        Legenda,
+    },
+    data(){   
         return {
             map: null,
-            layerGroup: {}
+            layerGroup: {},
+            onPoligon: 0,
         }
     },
-    props: { feats: [], rem: '', revis: '' },
+    props: { feats: [], rem: '', revis: '', hasLegenda: true, lTitle: '' },
+    emits:['onPoligon'],
     methods: {
+        exportMap(){
+            document.body.style.cursor = 'progress';
+
+            const format = 'a4';
+            const resolution = '72';
+            const dim = [297,210];
+            const width = Math.round((dim[0] * resolution) / 25.4);
+            const height = Math.round((dim[1] * resolution) / 25.4);
+            const size = this.map.getSize();
+            const viewResolution = this.map.getView().getResolution();
+
+            this.map.once('rendercomplete', (event) => event_handler(event, this.map)); 
+
+            const event_handler = (event, arg) => {
+
+           // this.map.once('rendercomplete', function () {
+                const mapCanvas = document.createElement('canvas');
+                mapCanvas.width = width;
+                mapCanvas.height = height;
+                const mapContext = mapCanvas.getContext('2d');
+                Array.prototype.forEach.call(
+                    document.querySelectorAll('.ol-layer canvas'),
+                    function (canvas) {
+                        if (canvas.width > 0) {
+                            const opacity = canvas.parentNode.style.opacity;
+                            mapContext.globalAlpha = opacity === '' ? 1 : Number(opacity);
+                            const transform = canvas.style.transform;
+                            // Get the transform parameters from the style's transform matrix
+                            const matrix = transform
+                                .match(/^matrix\(([^\(]*)\)$/)[1]
+                                .split(',')
+                                .map(Number);
+                                // Apply the transform to the export map context
+                                CanvasRenderingContext2D.prototype.setTransform.apply(
+                                    mapContext,
+                                    matrix
+                                );
+                                mapContext.drawImage(canvas, 0, 0);
+                        }
+                    }
+                );
+                mapContext.globalAlpha = 1;
+                mapContext.setTransform(1, 0, 0, 1, 0, 0);
+                const pdf = new jsPDF('landscape', undefined, format);
+                pdf.addImage(
+                    mapCanvas.toDataURL('image/jpeg'),
+                    'JPEG',
+                    0,
+                    0,
+                    dim[0],
+                    dim[1]
+                );
+                pdf.save('mapcasos.pdf');
+                // Reset original map size
+                arg.setSize(size);
+                arg.getView().setResolution(viewResolution);
+               // exportButton.disabled = false;
+                document.body.style.cursor = 'auto';
+            };//);
+
+            // Set print size
+            const printSize = [width, height];
+            this.map.setSize(printSize);
+            const scaling = Math.min(width / size[0], height / size[1]);
+            this.map.getView().setResolution(viewResolution / scaling);
+        },
+        limpaMap(){
+            var layersToRemove = [];
+            this.map.getLayers().forEach(function (layer) {
+                if (layer.get('name') != undefined && layer.get('name') !== 'base') {
+                    layersToRemove.push(layer);
+                }
+            });
+
+            var len = layersToRemove.length;
+            for (var i = 0; i < len; i++) {
+                this.map.removeLayer(layersToRemove[i]);
+            }
+
+            this.map.getView().setZoom(7);
+            this.map.getView().setCenter(fromLonLat([-48, -22]));
+        },
+        limpaPol(){
+            var layersToRemove = [];
+            this.map.getLayers().forEach(function (layer) {
+                if (layer.get('name') != undefined && layer.get('name') === 'poligono') {
+                    layersToRemove.push(layer);
+                }
+            });
+
+            var len = layersToRemove.length;
+            for (var i = 0; i < len; i++) {
+                this.map.removeLayer(layersToRemove[i]);
+            }
+        },
         loadLayer() {
             if (this.feats.length == 0){
                 return false;
@@ -121,10 +231,12 @@ export default {
             this.map.getView().fit(extent);
         },
         loadMap(){
+            //this.$refs['map-root'].innerText="<div id=\"info\"></div>";
             this.map = new Map({
                 layers: [
                     new TileLayer({
-                        source: new OSM()
+                        source: new OSM(),
+                        name: 'base'
                     }),
                    // this.layerGroup
                 ],
@@ -158,6 +270,121 @@ export default {
                 currentFeature = clicked;            
             });
 
+          /*  var customControl = new Control({
+                element: document.createElement('div'),
+                className: 'custom-control',
+                content: 'Meu Controle'
+            });*/
+            var customControl = new Control({element: document.getElementById("legenda")});
+
+            // Adicione o controle ao mapa
+            this.map.addControl(customControl);
+        },
+        async loadPoligono(){
+            const file = await this.$refs.loadPolDialog.show({
+                  okButton: 'Confirmar',
+                });
+                if (file != ''){
+                  return this.carregaPoligon(file);
+                };
+        },
+        async carregaPoligon(file){
+            console.log(file);
+            var tmppath = URL.createObjectURL(file);
+
+            const response = await fetch(tmppath);
+            const data = await response.json();
+
+            var source = new VectorSource({
+                features: new GeoJSON().readFeatures(data)
+            });
+            var vector = new VectorLayer({
+                source: source,
+                name: 'poligono'   
+            });
+            this.map.addLayer(vector);
+            
+        },
+        async doSavePoligono(){
+            const nome = await this.$refs.salvaPolDialog.show({
+                  okButton: 'Confirmar',
+                });
+                if (nome != ''){
+                  return this.savePoligon(nome);
+                };
+        },
+
+        doPoligono() {
+            var obj = JSON.parse(localStorage.getItem('prefs'));
+            var source = new VectorSource({wrapX: false});
+            this.onPoligon = 1;
+
+            var vector = new VectorLayer({
+                source: source,
+                name: 'poligono'
+            });
+            this.map.addLayer(vector);
+
+            var draw = new Draw({
+                source: source,
+                type: 'Polygon'
+            });
+
+            draw.on('drawstart', function (event) {
+                var s = new Style({
+                    fill: new Fill({
+                        color: obj.poligC + '30'
+                    })
+                });
+
+                event.feature.setStyle(s);
+
+            });
+       
+            const event_handler = (event, arg) => {
+                var parent = draw.getMap();
+                parent.removeInteraction(draw);
+                arg();
+            }
+            draw.addEventListener('drawend', (event) => event_handler(event, this.doSavePoligono));       
+
+           /* draw.on('drawend', function (event) {
+                var parent = draw.getMap();
+                parent.removeInteraction(draw);
+                this.onPoligon = 9;
+            });*/
+            this.map.addInteraction(draw);
+        },
+        savePoligon(nome) {
+            try{
+                var layer;
+                this.map.getLayers().forEach(function (lyr) {
+                    if ('poligono' == lyr.get('name')) {
+                        layer = lyr;
+                    }
+                });
+
+
+                var features = layer.getSource().getFeatures();
+                var newForm = new GeoJSON();
+                var featColl = newForm.writeFeaturesObject(features);
+
+                var txtArray = [];
+                txtArray.push(JSON.stringify(featColl));
+
+                var blob = new Blob(txtArray, {type: 'text/json;charset=utf8'});
+
+                const e = document.createEvent('MouseEvents'),
+                a = document.createElement('a');
+                a.download = nome + ".json";
+                a.href = window.URL.createObjectURL(blob);
+                a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
+                e.initEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                a.dispatchEvent(e);  
+                return true;
+            } catch (e){
+                return false;
+            }
         },
         raiar() {
             //usando as preferencias
@@ -230,11 +457,17 @@ export default {
                     element.setVisible(true);
                 }
             });
+        },
+        onPoligon(value){
+            this.$emit('onPoligon', value);
         }
     }
 }
 </script>
 <style scoped>
+#legenda{
+    padding-right: 1rem;
+}
 #info {
         position: absolute;
         display: inline-block;

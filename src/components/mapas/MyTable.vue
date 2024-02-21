@@ -102,7 +102,8 @@
 
 <script>
 import { TabulatorFull as Tabulator } from "tabulator-tables"; //import Tabulator library
-import lang from "./lang";
+import lang from "../general/lang";
+import '../../../node_modules/tabulator-tables/dist/css/tabulator_bulma.min.css'
 
 
 export default {
@@ -120,6 +121,25 @@ export default {
     };
   },
   methods: {
+    loadTable(){
+      this.tabulator = new Tabulator(this.$refs.table, {
+        langs: lang,
+        locale: "pt-br",
+        data: this.tableData, //link data to table
+        layout: "fitColumns",
+        placeholder:"Nenhum registro atende aos critérios escolhidos!",
+        reactiveData: true, //enable data reactivity
+        columns: this.columns, //define table columns
+        pagination: "local",
+        paginationSize: 10,
+        paginationSizeSelector: [5, 10, 15, 20],
+        movableColumns: true,
+        paginationCounter: "rows",
+      });
+    
+
+      this.cbColumns = this.columns.filter( el => el.title !== "Ações");
+    },
     setFilter() {
       let obj = this.form;
 
@@ -157,23 +177,8 @@ export default {
   props: ["tableData", "columns","filtered"],
   watch: {
     tableData(value) {
-      this.tabulator = new Tabulator(this.$refs.table, {
-        langs: lang,
-        locale: "pt-br",
-        data: value, //link data to table
-        layout: "fitColumns",
-        placeholder:"Nenhum registro atende aos critérios escolhidos!",
-        reactiveData: true, //enable data reactivity
-        columns: this.columns, //define table columns
-        pagination: "local",
-        paginationSize: 10,
-        paginationSizeSelector: [5, 10, 15, 20],
-        movableColumns: true,
-        paginationCounter: "rows",
-      });
-    
-
-      this.cbColumns = this.columns.filter( el => el.title !== "Ações");
+      alert('veio');
+      this.loadTable();
     },
   },
   mounted() {
@@ -184,7 +189,7 @@ export default {
     );
     document.head.appendChild(externalScript);
 
-
+    this.loadTable();
 
    /* let externalScript1 = document.createElement("script");
     externalScript1.setAttribute(

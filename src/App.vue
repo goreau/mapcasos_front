@@ -72,8 +72,12 @@ export default {
           },
           child: [
             {
-              href: "",
+              href: "/convencoes",
               title: "Convenções",
+            },
+            {
+              href: "/preferences",
+              title: "Configurações",
             },
             {
               href: "/",
@@ -113,75 +117,6 @@ export default {
         },
         {
           href: "",
-          title: "Polígonos",
-          icon: {
-            element: "font-awesome-icon",
-            attributes: {
-              icon: "fa-solid fa-draw-polygon",
-              size: "lg",
-              transform: "shrink-8",
-            },
-          },
-          child: [
-            {
-              href: "",
-              title: "Criar",
-            },
-            {
-              href: "",
-              title: "Salvar",
-            },
-            {
-              href: "",
-              title: "Limpar",
-            },
-            {
-              href: "",
-              title: "Carregar",
-            },
-          ],
-          //text ou child
-        },
-        {
-          href: "",
-          title: "Mapa",
-          icon: {
-            element: "font-awesome-icon",
-            attributes: {
-              icon: "fa-solid fa-location-dot",
-              size: "lg",
-              transform: "shrink-8",
-            },
-          },
-          child: [
-            {
-              href: "/home",
-              title: "Limpar",
-              icon: {
-                element: "font-awesome-icon",
-                attributes: {
-                  icon: "fa-solid fa-search",
-                  size: "lg",
-                  transform: "shrink-8",
-                },
-              },
-            },
-            {
-              href: "",
-              title: "Exportar",
-            },
-            {
-              href: "/preferences",
-              title: "Configurações",
-            },
-            {
-              href: "",
-              title: "Convenções",
-            },
-          ],
-        },
-        {
-          href: "",
           title: "Gráficos",
           icon: {
             element: "font-awesome-icon",
@@ -193,28 +128,34 @@ export default {
           },
           child: [
             {
-              href: "",
+              href: "/diagrama",
               title: "Diagrama de Controle",
-              icon: {
-                element: "font-awesome-icon",
-                attributes: {
-                  icon: "fa-solid fa-search",
-                  size: "lg",
-                  transform: "shrink-8",
-                },
-              },
+            },
+            {
+              href: "/histograma",
+              title: "Histograma",
+            },
+          ],
+        },
+        {
+          href: "",
+          title: "Sinan",
+          icon: {
+            element: "font-awesome-icon",
+            attributes: {
+              icon: "fa-solid fa-chart-simple",
+              size: "lg",
+              transform: "shrink-8",
+            },
+          },
+          child: [
+            {
+              href: "/importa",
+              title: "Importar arquivo",
             },
             {
               href: "",
               title: "Histograma",
-              icon: {
-                element: "font-awesome-icon",
-                attributes: {
-                  icon: "fa-solid fa-search",
-                  size: "lg",
-                  transform: "shrink-8",
-                },
-              },
             },
           ],
         },

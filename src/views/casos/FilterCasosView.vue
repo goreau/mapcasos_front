@@ -207,7 +207,8 @@ export default {
           this.$router.push({
             name: 'mapa',
             query: {
-              semanas: JSON.stringify(res.data),
+              semanas: JSON.stringify(res.data.lista),
+              filter: res.data.filter,
               tipo: this.tipo
             },
           });

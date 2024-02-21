@@ -9,7 +9,7 @@
           </header>
           <div class="card-content">
             <span class="filter">{{ strFiltro }}</span>
-            <MyTable :tableData="dataTable" :columns="columns" :is-filtered="false" :has-exports="true" v-if="id > 0"/>
+            <MyTable :tableData="dataTable" :columns="columns" :filtered="true" v-if="tipo > 0"/>
           </div>
         </div>
       </div>
@@ -19,14 +19,13 @@
 
 <script>
 import Loader from "@/components/general/Loader.vue";
-import MyTable from "@/components/forms/MyTable.vue";
-import reportService from "@/services/report.service";
+import MyTable from "@/components/mapas/MyTable.vue";
 
 export default {
   name: "Relatórios",
   data() {
     return {
-      id: 0,
+      tipo: 0,
       filter: {},
       dataTable: [],
       isLoading: false,
@@ -41,62 +40,44 @@ export default {
   },
   methods: {
     createColumns(){
-      switch (this.id) {
+      switch (this.tipo) {
         case '1':
-          this.title = 'Resumo de Atividades';
+          this.title = 'Listagem de Casos';
           this.columns = [
+                        { title: "Agravo", field: "agravo", type: "string" },
                         { title: "Município", field: "municipio", type: "string" },
-                        { title: "Programa", field: "programa", type: "string" },
-                        { title: "Atividade", field: "atividade", type: "string" },
-                        { title: "Módulo", field: "modulo", type: "string" },
-                        { title: "Quantidade", field: "quantidade", type: "string" },
-                        { title: "Dias", field: "dias", type: "string" },
-                        { title: "Profissionais", field: "profissionais", type: "string" },
-                        { title: "Participantes", field: "participantes", type: "string" },
+                        { title: "SINAN", field: "sinan", type: "string" },
+                        { title: "Nome", field: "nome", type: "string" },
+                        { title: "Endereço", field: "endereco", type: "string" },
+                        { title: "Semana", field: "semana", type: "string" },
+                        { title: "Observação", field: "observacao", type: "string" },
+                        { title: "Resultado", field: "resultado", type: "string", formatter:function(cell, formatterParams){
+                            var value = cell.getValue();
+                              if(value == 'Conf'){
+                                  return "<span style='color:#ff0000; font-weight:bold;'>" + value + "</span>";
+                              } else if(value == 'Desc'){
+                                  return "<span style='color:#009900; font-weight:bold;'>" + value + "</span>";
+                              } else {
+                                return "<span style='color:ff9933; font-weight:bold;'>" + value + "</span>";
+                              }
+                          }
+                        }, 
+                        { title: "Coordenadas", field: "coordenadas", type: "string" },
                       ];
           break;
         case '2':
-          this.title = 'Resumo de Instituições';
-          this.columns = [
-                        { title: "Município", field: "municipio", type: "string" },
-                        { title: "Programa", field: "programa", type: "string" },
-                        { title: "Módulo", field: "modulo", type: "string" },
-                        { title: "Instituição", field: "instituicao", type: "string" },
-                        { title: "Tipo", field: "tipo", type: "string" },                        
+          this.title = 'Casos por semana';
+          var keyNames = Object.keys(this.dataTable[0]);
+          var mycolumns = [
+                        { title: "Município", field: "municipio", type: "string" },                       
                       ];
-          break;
-        case '3':
-          this.title = 'Resumo de Treinamentos';
-          this.columns = [
-                        { title: "Município", field: "municipio", type: "string" },
-                        { title: "Programa", field: "programa", type: "string" },
-                        { title: "Módulo", field: "modulo", type: "string" },
-                        { title: "Dias", field: "dias", type: "string" },
-                        { title: "Profissionais", field: "profissionais", type: "string" },
-                        { title: "Participantes", field: "participantes", type: "string" },                     
-          ];
-          break;
-        case '4':
-          this.title = 'Resumo de Projetos';
-          this.columns = [
-                        { title: "Município", field: "municipio", type: "string" },
-                        { title: "Projeto", field: "nome", type: "string" },
-                        { title: "Programa", field: "programa", type: "string" },
-                        { title: "Responsável", field: "responsavel", type: "string" },
-                        { title: "Data Criação", field: "data", type: "string" },
-                     
-          ];
-          break;
-        case '5':
-          this.title = 'Atividades por Projeto';
-          this.columns = [
-                        { title: "Município", field: "municipio", type: "string" },
-                        { title: "Projeto", field: "nome", type: "string" },
-                        { title: "Fase", field: "fase", type: "string" },
-                        { title: "Atividade", field: "atividade", type: "string" },
-                        { title: "Módulo", field: "modulo", type: "string" },
-                     
-          ];
+          keyNames.map(col =>{
+            if (col !== 'municipio'){
+              var obj = { title: col, field: col, type: "number" };
+              mycolumns.push(obj);
+            };
+          })
+          this.columns = mycolumns;
           break;
         default:
           break;
@@ -106,24 +87,16 @@ export default {
   mounted() {
     this.isLoading = true;
   
-    reportService.getRelat(this.id,this.filter)
-      .then((response) => {
-        var data = response.data;
-        this.dataTable = data.data;
-        this.strFiltro = data.filter;
-        this.isLoading = false;
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => (this.isLoading = false));
+    this.tipo = this.$route.query.tipo;
+    var data = JSON.parse(this.$route.query.arrData);
+    this.dataTable = data.data;
+    this.filter = data.filter;
     
     this.createColumns();
     this.isLoading = false;
   },
   created() {
-    this.id = this.$route.params.id;
-    this.filter = localStorage.getItem('filter');
+    
   },
 };
 </script>
