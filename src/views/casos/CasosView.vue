@@ -9,7 +9,7 @@
             :lTitle="legTitle"
             @onPoligon="onPoligon = $event" ></MapContainer>
             <ClusterContainer v-if="tipo==2" :arrData="arrData"></ClusterContainer>
-            <div class="actionBar">
+            <div class="actionBar" v-if="tipo==1">
                 <div class="columns">
                     <div class="column box is-4 is-offset-4 has-text-centered ctrlBar">
                         <span class="btCont">
@@ -153,7 +153,7 @@ export default {
                     type: "Feature",
                     geometry: {
                         type: "Point",
-                        coordinates: [el.latitude, el.longitude],
+                        coordinates: [el.longitude, el.latitude],
                     },
                     properties: {
                         nome: el.nome,
@@ -171,7 +171,7 @@ export default {
             var feats = [];
 
             this.arrData.map(el => {
-                var feat = new Feature( new Point([el.latitude, el.longitude]))
+                var feat = new Feature( new Point([el.longitude, el.latitude]))
                 feats.push(feat);
             });
             return feats
@@ -186,6 +186,7 @@ export default {
 }
 .actionBar{
     padding: 1rem;
+    background-color: #ccc;
 }
 .actionBar .button{
     margin: .2rem;

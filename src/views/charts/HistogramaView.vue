@@ -18,7 +18,7 @@
                                             <div class="column is-4">
                                                 <label class="label">Município</label>
                                                 <div class="control">
-                                                    <CmbTerritorio :id_prop="1" :sel="filter.id_municipio" :tipo="9"
+                                                    <CmbTerritorio :id_prop="user" :sel="filter.id_municipio" :tipo="9"
                                                         @selTerr="filter.id_municipio = $event" />
                                                 </div>
                                             </div>
@@ -91,6 +91,7 @@ export default {
                 faixas: false
             },
             hasData: false,
+            user: '',
             // Array will be automatically processed with visualization.arrayToDataTable function
             chartData: [],
             chartOptions: {
@@ -123,6 +124,17 @@ export default {
                     console.log(err.response);
                     this.chartData = [];
                 });
+        }
+    },
+    computed: {
+        currentUser() {
+            return this.$store.getters["auth/loggedUser"];
+        },
+    },
+    mounted() {
+        let cUser = this.currentUser;
+        if (cUser) {
+            this.user = JSON.stringify(cUser);
         }
     }
 }

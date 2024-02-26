@@ -215,7 +215,7 @@ export default {
                     return style;
                 },
             });
-
+            vectorLayer.setZIndex(10);
             this.map.addLayer(vectorLayer);
            // this.layerGroup.layers.push(vectorLayer);
             this.layerGroup.getLayers().push(vectorLayer);
@@ -256,13 +256,16 @@ export default {
                     (feature) => feature
                 )
                 if (clicked){
-                    info.style.left = (evt.pixel[0] + 120) + 'px';
-                    info.style.top = evt.pixel[1] + 'px';
-                    if (clicked !== currentFeature) {
-                        info.style.visibility = 'visible';
-                        var details = "SINAN: " + clicked.get('sinan') + '\r\n'+
-                        "NOME: " + clicked.get('nome');
-                        info.innerText = details;
+                    var tipo = clicked.getGeometry().getType();
+                    if (tipo == 'Point'){
+                        info.style.left = (evt.pixel[0] + 120) + 'px';
+                        info.style.top = evt.pixel[1] + 'px';
+                        if (clicked !== currentFeature) {
+                            info.style.visibility = 'visible';
+                            var details = "SINAN: " + clicked.get('sinan') + '\r\n'+
+                            "NOME: " + clicked.get('nome');
+                            info.innerText = details;
+                        }
                     }
                 } else {
                     info.style.visibility = 'hidden';
@@ -289,7 +292,6 @@ export default {
                 };
         },
         async carregaPoligon(file){
-            console.log(file);
             var tmppath = URL.createObjectURL(file);
 
             const response = await fetch(tmppath);
@@ -302,6 +304,7 @@ export default {
                 source: source,
                 name: 'poligono'   
             });
+            vector.setZIndex(5);
             this.map.addLayer(vector);
             
         },
@@ -323,6 +326,7 @@ export default {
                 source: source,
                 name: 'poligono'
             });
+            vector.setZIndex(5);
             this.map.addLayer(vector);
 
             var draw = new Draw({
@@ -429,10 +433,22 @@ export default {
 
             circleLayer.setZIndex(1);
             this.map.addLayer(circleLayer);
+        },
+        checkPrefs(){
+            var obj = JSON.parse(localStorage.getItem('prefs'));
+            if (obj == null){
+                var prefs = {
+                    raioD: 200,
+                    raioC: '#332245',
+                    poligC: '#7398C0'
+                }
+                localStorage.setItem('prefs', JSON.stringify(prefs));
+            }
         }
     },
     mounted() {
         this.loadMap(); 
+        this.checkPrefs();
         this.layerGroup = new Group({
             title: 'grpCasos',
             layers: []

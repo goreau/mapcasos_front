@@ -64,7 +64,7 @@ export default {
             const features = new Array(count);
             
             for (let i = 0; i < count; ++i) {
-                const coordinates = [this.arrData[i].latitude , this.arrData[i].longitude];
+                const coordinates = [this.arrData[i].longitude , this.arrData[i].latitude];
                 features[i] = new Feature(new Point(transform(coordinates, 'EPSG:4326', 'EPSG:3857')));
                 features[i].setProperties({'agravo':this.arrData[i].id_agravo, 'status':this.arrData[i].id_resultado})
             }

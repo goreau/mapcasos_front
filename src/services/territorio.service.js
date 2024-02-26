@@ -51,8 +51,8 @@ class TerritorioService {
     })
   }
 
-  getCombo(tipo, id_prop){
-    return axios.get(`/territorios/${tipo}/${id_prop}`)
+  getCombo(tipo, user){
+    return axios.get(`/territorios/${tipo}/${user}`)
     .then(response => {
         return {data: response.data};
     },

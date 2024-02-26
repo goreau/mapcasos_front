@@ -63,8 +63,8 @@
                                     <div class="column is-5">
                                         <div class="field">
                                             <label class="label">Município</label>
-                                            <CmbTerritorio :id_prop="1" :sel="caso.id_municipio" :tipo="9"
-                                                @selTerr="caso.id_municipio = $event" />
+                                            <CmbTerritorio :id_prop="user" :sel="caso.id_municipio" :tipo="9" @selText="nomemun = $event"
+                                                @selTerr="caso.id_municipio = $event"  />
                                         </div>
                                     </div>
                                 </div>
@@ -86,6 +86,7 @@
                                     </div>
                                 </div>
                             </fieldset>
+                            
                         </div>
                     </div>
                     <footer class="card-footer">
@@ -96,6 +97,15 @@
                                         <button class="button is-link submit-btn is-fullwidth" id="salvar" @click="doEdit">
                                         <span class="btico"><font-awesome-icon icon="fa-solid fa-check" /></span>
                                             Salvar
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="column is-4">
+                                    <div class="control" v-if="hasAddress">
+                                        <button class="button is-link submit-btn is-fullwidth" id="mapear" @click="doMaps">
+                                        <span class="btico"><font-awesome-icon icon="fa-solid fa-check" /></span>
+                                            Abrir no Google Maps
                                         </button>
                                     </div>
                                 </div>
@@ -131,6 +141,8 @@ export default {
                 latitude:'',
                 longitude: ''
             },
+            nomemun: '',
+            user: '',
             isLoading: false,
             message: "",
             caption: "",
@@ -139,6 +151,19 @@ export default {
         }
     },
     methods: {
+        doMaps(){
+            var url = 'https://www.google.com/maps/search/?api=1&hl=pt-br&query='; 
+           
+            if (this.caso.longitude != 0){
+                var point = encodeURIComponent(this.caso.longitude + ', ' + this.caso.latitude);
+                url += point;
+            } else {
+                var address = encodeURIComponent(this.caso.endereco + ', ' + this.nomemun);
+                url+= address;
+            }
+
+            window.open(url,'_blank');
+        },
         doEdit(){
             document.getElementById('salvar').classList.add('is-loading');
 
@@ -178,7 +203,41 @@ export default {
                     this.casos = [];
                 });
         }
-    }
+    },
+    computed: {
+        currentUser() {
+            return this.$store.getters["auth/loggedUser"];
+        },
+        hasAddress(){
+            return (this.caso.endereco != '' && this.caso.id_municipio > 0);
+        }
+    },
+    mounted() {
+        let cUser = this.currentUser;
+    
+        if (cUser) {
+            if (cUser.nivel == 9){
+                this.showMessage = true;
+                this.message = "Você não tem permissão para alterar dados!";
+                this.type = "alert";
+                this.caption = "SINAN";
+                setTimeout(() => {
+                    this.showMessage = false;
+                    this.$router.back();
+                }, 3000);
+            } else {
+                this.user = JSON.stringify(cUser);
+            }
+            
+        }
+
+        var qsin = this.$route.params.sinan;
+
+        if(qsin != 0){
+            this.caso.id_sinan = qsin;
+            this.doBuscarCaso();
+        }
+    },
 }
 </script>
 

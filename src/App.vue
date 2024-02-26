@@ -106,7 +106,7 @@ export default {
               title: "Cluster",
             },
             {
-              href: "/editcaso",
+              href: "/editcaso/0",
               title: "Editar",
             },
             {
@@ -154,8 +154,12 @@ export default {
               title: "Importar arquivo",
             },
             {
-              href: "",
-              title: "Histograma",
+              href: "/naorecebidos",
+              title: "Casos Não Recebidos",
+            },
+            {
+              href: "/naocodificados",
+              title: "Casos Não Geocodificados",
             },
           ],
         },

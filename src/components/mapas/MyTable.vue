@@ -104,6 +104,8 @@
 import { TabulatorFull as Tabulator } from "tabulator-tables"; //import Tabulator library
 import lang from "../general/lang";
 import '../../../node_modules/tabulator-tables/dist/css/tabulator_bulma.min.css'
+import jspdf from 'jspdf'
+import 'jspdf-autotable'
 
 
 export default {
@@ -177,7 +179,6 @@ export default {
   props: ["tableData", "columns","filtered"],
   watch: {
     tableData(value) {
-      alert('veio');
       this.loadTable();
     },
   },

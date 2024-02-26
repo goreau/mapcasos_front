@@ -24,7 +24,7 @@ const routes = [
     component: () => import( '../views/relat/FilterRelatView.vue'),
   },
   {
-    path: '/editcaso',
+    path: '/editcaso/:sinan',
     name: 'editcaso',
     component: () => import( '../views/casos/EditView.vue'),
   },
@@ -68,6 +68,16 @@ const routes = [
     path: '/importa',
     name: 'importa',
     component: () => import( '../views/sinan/ImportaView.vue'),
+  },
+  {
+    path: '/naorecebidos',
+    name: 'naorecebidos',
+    component: () => import( '../views/sinan/NaoRecebidosView.vue'),
+  },
+  {
+    path: '/naocodificados',
+    name: 'naocodificados',
+    component: () => import( '../views/casos/NaoCodificadosView.vue'),
   },
 ]
 

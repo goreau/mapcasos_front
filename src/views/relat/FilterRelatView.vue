@@ -86,7 +86,7 @@
                                                             <div class="field">
                                                                 <label class="label">Município</label>
                                                                 <div class="control">
-                                                                    <CmbTerritorio :id_prop="1" :sel="filter.id_municipio"
+                                                                    <CmbTerritorio :id_prop="user" :sel="filter.id_municipio"
                                                                         :tipo="9" @selTerr="filter.id_municipio = $event" />
                                                                 </div>
                                                             </div>
@@ -141,7 +141,7 @@
                         </div>
                     </div>
                     <footer class="card-footer">
-                        <footerCard @submit="create" @cancel="null" @aux="details" :cFooter="cFooter" />
+                       
                     </footer>
                 </div>
             </div>
@@ -175,6 +175,7 @@ export default {
                 dt_inicio: "",
                 dt_final: "",
             },
+            user: '',
             dataTable: [],
             lstAgravo: [],
             lstResult: [],
@@ -188,7 +189,9 @@ export default {
         };
     },
     computed: {
-
+        currentUser() {
+            return this.$store.getters["auth/loggedUser"];
+        },
     },
     components: {
         Message,
@@ -235,6 +238,11 @@ export default {
         }
     },
     mounted() {
+        let cUser = this.currentUser;
+        if (cUser) {
+            this.user = JSON.stringify(cUser);
+        }
+
         var obj = localStorage.getItem('filter');
         if (obj) {
             this.filter = JSON.parse(obj);

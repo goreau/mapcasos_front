@@ -18,7 +18,7 @@
                                             <div class="column">
                                                 <label class="label">Município</label>
                                                 <div class="control">
-                                                    <CmbTerritorio :id_prop="1" :sel="filter.id_municipio" :tipo="9"
+                                                    <CmbTerritorio :id_prop="user" :sel="filter.id_municipio" :tipo="9"
                                                         @selTerr="filter.id_municipio = $event" />
                                                 </div>
                                             </div>
@@ -39,8 +39,8 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="columns">
-                                            <div class="column">
+                                        <div class="columns is-centered">
+                                            <div class="column is-4">
                                                 <div class="control">
                                                     <button class="button is-link submit-btn is-fullwidth" id="login"
                                                         @click="getAnos">
@@ -58,12 +58,16 @@
                                         <legend>Anos</legend>
                                         <div class="columns">
                                             <div class="column is-6">
-                                                <div class="columns" v-for="res in anos" :key="res.ano" style="padding-left: 3rem;">
-                                                    <label for="" class="checkbox">
-                                                        <input type="checkbox" v-model="filter.anos" :true-value="[]"
-                                                            :value="res.ano" checked>
-                                                        {{ res.ano }} - Incidência: {{ res.s_tt }}
-                                                    </label>
+                                                <div class="columns is-centered">
+                                                    <div class="column is-4">
+                                                        <div class="columns" v-for="res in anos" :key="res.ano" style="padding-left: 3rem;">
+                                                            <label for="" class="checkbox">
+                                                                <input type="checkbox" v-model="filter.anos" :true-value="[]"
+                                                                    :value="res.ano" checked>
+                                                                {{ res.ano }} - Incidência: {{ res.s_tt }}
+                                                            </label>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="column is-6">   
@@ -117,6 +121,7 @@ export default {
                 anofim: '',
                 anos: []
             },
+            user: '',
             hasData: false,
             hasAnos: false,
             title: '',
@@ -173,6 +178,17 @@ export default {
                     console.log(err.response);
                     this.chartData = [];
                 });
+        }
+    },
+    computed: {
+        currentUser() {
+            return this.$store.getters["auth/loggedUser"];
+        },
+    },
+    mounted() {
+        let cUser = this.currentUser;
+        if (cUser) {
+            this.user = JSON.stringify(cUser);
         }
     }
 }

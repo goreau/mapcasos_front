@@ -7,6 +7,6 @@ export default createStore({
     auth,
   },
   state: {
-    back_api: process.env.VUE_APP_BACK_API //'http://localhost:4001/'
+    back_api: process.env.VUE_APP_BACK_API 
   }
 })

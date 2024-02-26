@@ -57,7 +57,7 @@
                               <div class="field">
                                 <label class="label">Município</label>
                                 <div class="control">
-                                  <CmbTerritorio :id_prop="1" :sel="filter.id_municipio" :tipo="9"
+                                  <CmbTerritorio :id_prop="user"  :sel="filter.id_municipio" :tipo="9"
                                     @selTerr="filter.id_municipio = $event" />
                                 </div>
                               </div>
@@ -95,6 +95,7 @@
                     </div>
                   </div>
                 </div>
+                
               </section>
               <section class="section">
                 <div class="columns is-centered">
@@ -111,7 +112,7 @@
             </div>
           </div>
           <footer class="card-footer">
-            <footerCard @submit="create" @cancel="null" @aux="details" :cFooter="cFooter" />
+            
           </footer>
         </div>
       </div>
@@ -145,6 +146,7 @@ export default {
         dt_inicio: "",
         dt_final: "",
       },
+      user: '',
       semanas: [],
       casos: [],
       lstAgravo: [],
@@ -162,7 +164,9 @@ export default {
     };
   },
   computed: {
-
+        currentUser() {
+            return this.$store.getters["auth/loggedUser"];
+        },
   },
   components: {
     Message,
@@ -171,6 +175,7 @@ export default {
   },
   methods: {
     doProcessar(){
+      document.getElementById('login').classList.add('is-loading');
       if(this.tipo == 1){
         this.getSemanas();
       } else {
@@ -196,6 +201,7 @@ export default {
           console.log(err.response);
           this.casos = [];
         })
+        .finally(()=> document.getElementById('login').classList.remove('is-loading'));
     },
     getSemanas() {
       var filt = JSON.stringify(this.filter)
@@ -217,6 +223,7 @@ export default {
           console.log(err.response);
           this.casos = [];
         })
+        .finally(()=> document.getElementById('login').classList.remove('is-loading'));
     },
     getAgravoList() {
       CasosService.getAgravos()
@@ -240,6 +247,12 @@ export default {
     }
   },
   mounted() {
+    let cUser = this.currentUser;
+        if (cUser) {
+            this.user = JSON.stringify(cUser);
+        }
+
+
     this.tipo = this.$route.params.tipo;
 
     var obj = localStorage.getItem('filter');

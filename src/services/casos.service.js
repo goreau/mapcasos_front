@@ -21,6 +21,16 @@ class CasosService {
     })
   }
 
+  getNaoCodificados(user) {
+    return axios.get(`/naocodificados/${user}`)
+    .then(response => {
+      return response;
+    },
+    (error) => {
+      throw new Error(error.data.msg);
+    })
+  }
+
   getRelat(id, filter) {
     filter = JSON.parse(filter);
     return axios.post(`/relat/${id}`,filter)
@@ -71,6 +81,7 @@ class CasosService {
       throw new Error(error.data.msg);
     })
   }
+
 }
 
 export default new CasosService();

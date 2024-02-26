@@ -29,9 +29,10 @@ api.interceptors.response.use(
     }
   },
 error => {
-  console.log(this.$router)
     if (error.response.status) {
       switch (error.response.status) {
+        case 400:
+          break;
         case 401:
           router.replace({
             path: "/home",

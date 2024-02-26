@@ -34,7 +34,7 @@
           <footer class="card-footer">
                 
                     <div class="column is-4 is-offset-4">
-                        <button v-if="file != ''" @click="sendFile" class="button is-danger is-fullwidth is-light is-outlined">Processar o arquivo!</button>
+                        <button v-if="file != ''" @click="sendFile" id="btProcessa" class="button is-danger is-fullwidth is-light is-outlined">Processar o arquivo!</button>
                     </div>
 
           </footer>
@@ -88,6 +88,7 @@ export default {
             this.file = oFile;
         },
         sendFile(){
+            document.getElementById('btProcessa').classList.add('is-loading');
             let dataForm = new FormData();
 
             dataForm.append('fileSinan', this.file);
@@ -104,8 +105,33 @@ export default {
                 console.log(err.response);
                 this.casos = [];
             })
+            .finally(()=> document.getElementById('btProcessa').classList.remove('is-loading'));
         }
     },
+    computed: {
+        currentUser() {
+            return this.$store.getters["auth/loggedUser"];
+        },
+    },
+    mounted() {
+        let cUser = this.currentUser;
+    
+        if (cUser) {
+            if (cUser.nivel == 9){
+                this.showMessage = true;
+                this.message = "Você não tem permissão para importar arquivos!";
+                this.type = "alert";
+                this.caption = "SINAN";
+                setTimeout(() => {
+                    this.showMessage = false;
+                    this.$router.back();
+                }, 3000);
+            } else {
+                this.user = JSON.stringify(cUser);
+            }
+            
+        }
+    }
 }
 </script>
 
