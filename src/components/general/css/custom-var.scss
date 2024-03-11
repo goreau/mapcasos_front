@@ -1,7 +1,7 @@
 $primary-color: #a33a3a !default;
 $base-bg: #c06565 !default;
 
-$item-color: #601b04 !default;
+$item-color: #270d04 !default;
 
 $item-color-master: #584a92 !default;
 
@@ -16,7 +16,7 @@ $item-hover-color: null !default;
 $item-hover-bg: rgba(darken($base-bg, 5%), 0.5) !default;
 
 $icon-color: null !default;
-$icon-bg: darken($base-bg, 5%) !default;
+$icon-bg: $base-bg !default;
 
 $icon-active-color: null !default;
 $icon-active-bg: null !default;
@@ -29,7 +29,7 @@ $mobile-item-bg: $primary-color !default;
 $mobile-icon-color: $mobile-item-color !default;
 $mobile-icon-bg: $mobile-item-bg !default;
 
-$dropdown-color: #null !default;
+$dropdown-color: #f5f5c5 !default;
 $dropdown-bg: lighten($base-bg, 5%) !default;
 
 $header-item-color: rgba($item-color, 0.7) !default;

@@ -2,7 +2,6 @@
   <div class="home">
     <MapContainer></MapContainer>
   </div>
-  {{ user }}
 </template>
 
 <script>
@@ -10,6 +9,7 @@
 //import MapaView from  '@/components/MapaView.vue';
 
 import MapContainer from '@/components/mapas/MapContainer.vue';
+import moment from 'moment';
 
 export default {
   data() {
@@ -23,9 +23,22 @@ export default {
   },
   mounted(){
     this.user = this.$route.query.user;
+    var texp = Date.now() + (30 * 60 * 1000); //moment().add(20, 'm').toString();
+  
     if (this.user == undefined){
-      var obj = "{\"id\": 9999, \"mun\": 999, \"nivel\": 9, \"sys\": 1}";
+      var logged = JSON.parse(localStorage.getItem('usermap'));
+      
+      if (logged && logged.exp > Date.now()){
+        logged.exp = texp;
+        logged = JSON.stringify(logged);
+        var obj = JSON.parse(JSON.stringify(logged));
+      } else {
+        var obj = "{\"id\": 9999, \"mun\": 999, \"nivel\": 9, \"sys\": 1, \"exp\": " + texp + "}";
+      }
     } else {
+      var parc = JSON.parse(this.user);
+      parc.exp = texp;
+      this.user = JSON.stringify(parc);
       var obj = JSON.parse(JSON.stringify(this.user));
     }
     localStorage.setItem('usermap', obj);

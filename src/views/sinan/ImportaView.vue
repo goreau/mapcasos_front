@@ -75,7 +75,7 @@ export default {
             var name = oFile.name.split('.').pop();
 
        //     if (! rFilter.test(oFile.type)) {
-            if (! name == 'dbf'){
+            if (name.localeCompare('dbf') !== 0){
 
                 document.getElementById('error').style.display = 'block';
 
@@ -96,7 +96,7 @@ export default {
             SinanService.sendFile(dataForm)
             .then((res) => {
                 this.showMessage = true;
-                this.message = "Arquivo enviado!! Os casos estão agora sendo processados.";
+                this.message = "Arquivo enviado!! Foram recebidos " + res.quant + " registros.";
                 this.type = "success";
                 this.caption = "SINAN";
                 setTimeout(() => (this.showMessage = false), 3000);
@@ -117,7 +117,7 @@ export default {
         let cUser = this.currentUser;
     
         if (cUser) {
-            if (cUser.nivel == 9){
+            if (cUser.nivel > 1){
                 this.showMessage = true;
                 this.message = "Você não tem permissão para importar arquivos!";
                 this.type = "alert";
@@ -136,5 +136,10 @@ export default {
 </script>
 
 <style>
+#error{
+    color: red;
+    font-weight: bold;
+    padding: 2rem;
+}
 
 </style>

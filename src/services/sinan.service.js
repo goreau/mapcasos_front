@@ -4,7 +4,7 @@ class SinanService {
   sendFile(form) {
     return axios.post('/upload',form)
     .then(response => {
-      return response;
+      return {quant: response.data.regs};
     },
     (error) => {
       throw new Error(error.data.msg);

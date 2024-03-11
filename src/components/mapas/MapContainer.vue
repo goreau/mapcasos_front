@@ -230,6 +230,9 @@ export default {
             //this.map.getView().fitExtent(extent, this.map.getSize());
             this.map.getView().fit(extent);
         },
+        getMap(){
+            return this.map;
+        },
         loadMap(){
             //this.$refs['map-root'].innerText="<div id=\"info\"></div>";
             this.map = new Map({
@@ -391,6 +394,13 @@ export default {
             }
         },
         raiar() {
+            let me = this;
+
+            //remove o anterior se ja existia
+            let old = me.map.getLayers().getArray().find(layer => layer.get('name') == 'raio');
+            if (old){
+                me.map.removeLayer(old);
+            }
             //usando as preferencias
             var obj = JSON.parse(localStorage.getItem('prefs'));
             var style = new Style({
@@ -413,7 +423,7 @@ export default {
 
             var layer;
 
-            this.map.getLayers().forEach(function (lyr) {
+            me.map.getLayers().forEach(function (lyr) {
                 if (lyr.get('tipo') == 'casos') {
                     if (lyr.getVisible()) {
                         layer = lyr;
@@ -422,17 +432,16 @@ export default {
                             var features = source.getFeatures();
                             features.forEach((feature) => {
                                 var p = feature.getGeometry().getCoordinates();
-                                vectorSource.addFeature(new Feature(new Circle(p, obj.raioD)));
+                                var r = parseInt(obj.raioD);
+                                vectorSource.addFeature(new Feature(new Circle(p, r)));
                             });
                         }
                     }
-                } else if ('raio' == lyr.get('name')) {
-                    this.map.removeLayer(lyr);
                 }
             });
 
             circleLayer.setZIndex(1);
-            this.map.addLayer(circleLayer);
+            me.map.addLayer(circleLayer);
         },
         checkPrefs(){
             var obj = JSON.parse(localStorage.getItem('prefs'));

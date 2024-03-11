@@ -74,14 +74,14 @@
                                         <div class="field">
                                             <label class="label">Latitude</label>
                                             <input type="text" class="input" placeholder="Nome do Bairro"
-                                                v-model="caso.longitude" />
+                                                v-model="caso.latitude" />
                                         </div>
                                     </div>
                                     <div class="column is-5">
                                         <div class="field">
                                             <label class="label">Longitude</label>
                                             <input type="text" class="input" placeholder="Nome do Bairro"
-                                                v-model="caso.latitude" />
+                                                v-model="caso.longitude" />
                                         </div>
                                     </div>
                                 </div>
@@ -155,7 +155,7 @@ export default {
             var url = 'https://www.google.com/maps/search/?api=1&hl=pt-br&query='; 
            
             if (this.caso.longitude != 0){
-                var point = encodeURIComponent(this.caso.longitude + ', ' + this.caso.latitude);
+                var point = encodeURIComponent(this.caso.latitude + ', ' + this.caso.longitude);
                 url += point;
             } else {
                 var address = encodeURIComponent(this.caso.endereco + ', ' + this.nomemun);

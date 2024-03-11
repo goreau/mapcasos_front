@@ -23,7 +23,7 @@
           right: 0;
           bottom: 0;
           left: 0;
-          color: $primary_color;
+          color: rgb(6, 11, 78);
           height: 3rem;
           z-index: 98;
           position:fixed;

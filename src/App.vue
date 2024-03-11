@@ -56,7 +56,6 @@ export default {
       hide: false,
       menu: [
         {
-          header: "Opções",
           hiddenOnCollapse: true,
         },
         {
